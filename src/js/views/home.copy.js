@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, matchPath } from "react-router-dom";
+import { Link } from "react-router-dom";
 import config from "../config";
 import "../../styles/home.css";
 import "../../styles/sableluzmango.css";
@@ -38,118 +38,105 @@ export const Home = () => {
 			setBrillo(colores);
 			setColors("white")
 		}
-		
 	};
 
+	const check=() =>{
+		if(localStorage.length===0){
+			
+			//console.log("YA SE PASO");
+		}else{
+			
+			//localStorage.setItem('test',2);
+		}
+	};
 	//const AllTogether = planetas.concat(vehiculos,personajes);
 	const displaylist = (e) => {
-		if(e===""){
-			 actions.SugerenciasCero();
-			 actions.SugerenciasCero();
-			 actions.SugerenciasCero();
-			 actions.SugerenciasCero();
-		}
-		if(e!==""){
-		console.log({ e })
-		
-		const options = ["planetas", "vehiculos", "personajes"]
-		const obj = { planetas, vehiculos, personajes }
-		const auxPlanetas= [...planetas]
-		const auxVehiculos=[...vehiculos]
-		const auxPersonajes=[...personajes]
-
-		let result = []
-		actions.eliminarTodoSugerencias();
-		//filtro a planetas
-		result = auxPlanetas.filter((element)=>{
-			const match= element.name.toLowerCase()
-			return match.includes(e)
-		})
-		for(let i=0;i<result.length;i++){
-			actions.agregarSugerenciasPlanetas(result[i].name,result[i].uid);
-			result.shift();
-		};
-		//filtro a vehiculos
-		result = auxVehiculos.filter((element)=>{
-			const match= element.name.toLowerCase()
-			return match.includes(e)
-		})
-		for(let i=0;i<result.length;i++){
-			actions.agregarSugerenciasVehiculos(result[i].name,result[i].uid);
-			result.shift();
-		};
-		//filtro a personajes
-		result = auxPersonajes.filter((element)=>{
-			const match= element.name.toLowerCase()
-			return match.includes(e)
+		modificarTexto(e);
+		console.log(planetas);
+		planetas.filter((planeta)=>{
+			const procesado = planeta.name.split(" ").join("");
+			const procesado1= procesado.toLowerCase();//procesado = texto.replace(/\s+/g, '') 
+			const busqueda = procesado1.includes(texto);
+			if (busqueda.length!==0 && busqueda ){
+				actions.agregarSugerenciasPlanetas(planeta.name,planeta.uid);
+			}
+			/*{return (
+				<div>AQUI IRIA LA LISTA DE SUGERENCIAS???<Link to={`/planeta/${planeta.uid}`}></Link></div>
+			)}*/
 		});
 
-		for(let i=0;i<result.length;i++){
-			actions.agregarSugerenciasPersonajes(result[i].name,result[i].uid);
-			result.shift();
-		};
-		console.log(result)
-		}
-				
+		vehiculos.filter((vehiculo)=>{
+			const procesado = vehiculo.name.split(" ").join("");
+			const procesado1= procesado.toLowerCase();
+			const busqueda = procesado1.includes(texto);
+			if (busqueda.length!==0 && busqueda ){
+				actions.agregarSugerenciasVehiculos(vehiculo.name,vehiculo.uid);
+			}
+			/*{return (
+				<div>AQUI IRIA LA LISTA DE SUGERENCIAS???<Link to={`/vehiculo/${vehiculo.uid}`}></Link></div>
+			)}*/
+		});
 
+		personajes.filter((personaje)=>{
+			const procesado = personaje.name.split(" ").join("");
+			const procesado1= procesado.toLowerCase();
+			const busqueda = procesado1.includes(texto);
+			if (busqueda.length!==0 && busqueda ){
+				actions.agregarSugerenciasPersonajes(personaje.name,personaje.uid);
+			}
+			/*{return (
+				<div>AQUI IRIA LA LISTA DE SUGERENCIAS???<Link to={`/personaje/${personaje.uid}`}></Link></div>
+			)}*/
+		});
+		//actions.filtro();
+		/*AllTogether.filter((element)=>{
+			
+			const procesado = element.name.split(" ").join("");
+			const procesado1= procesado.toLowerCase(); 
+			const busqueda = procesado1.includes(texto);
+			if (busqueda.length!==0 && busqueda ){
+				if(){}
+				}
+			//esta.name.startsWith(texto) ? console.log(esta.name):"no";
+			return  (
+				<div>AQUI IRIA LA LISTA DE SUGERENCIAS???<Link to={`/vehiculo/${vehiculo.uid}`}></Link></div>
+				)
+		})	*/
 	};
-	
-	const favcolor = (element) => {
-		
-	}
-		
-	
+	//data1.map((planetillas)=>{
+	//	localStorage.setItem('planetillas',planetillas)
+	//})
+
 	useEffect(async () => {
-		
-		if(localStorage.planetas){
-			const reto1 = JSON.parse(localStorage.getItem("planetas"));
-			modificarPlanetas(reto1);
-			console.log({planetas})
-			console.log("Se esta cargando la informacion desde localStorage")
-		}
-		else{
-			const res1 = await fetch(`${config.HOSTNAME}/planets`);
-			const data1 = await res1.json();
-			
-			localStorage.setItem("planetas",JSON.stringify(data1.results))
-			modificarPlanetas(data1.results);
-			console.log({ data1 })
-			console.log("Se esta realizando el fetch a la API")
-		}
+		//localStorage.length=0){
+		const res1 = await fetch(`${config.HOSTNAME}/planets`);
+		const data1 = await res1.json();
+		console.log({ data1 });
 		
 
-		if(localStorage.vehiculos){
-			const reto2 = JSON.parse(localStorage.getItem("vehiculos"));
-			modificarVehiculos(reto2);
-			console.log({vehiculos})
-			console.log("Se esta cargando la informacion desde localStorage")
+		modificarPlanetas(data1.results);
+		const estosplanetas=data1.results;
+		const estosplanetas1 = estosplanetas.name;
+		estosplanetas.map((planetta)=>{
+			console.log(planetta.name);
 		}
-		else{
-			const res2 = await fetch(`${config.HOSTNAME}/vehicles`);
-			const data2 = await res2.json();
-			
-			localStorage.setItem("vehiculos",JSON.stringify(data2.results))
-			modificarVehiculos(data2.results);
-			console.log({ data2 })
-			console.log("Se esta realizando el fetch a la API")
-		}
+		);
+		
+		
+		const res2 = await fetch(`${config.HOSTNAME}/vehicles`);
+		const data2 = await res2.json();
+		
+		modificarVehiculos(data2.results);
 
+		const res3 = await fetch(`${config.HOSTNAME}/people`);
+		const data3 = await res3.json();
+		
+		modificarPersonajes(data3.results);//al equivocarme aqui, me salian los nombres de personajes pero me redirigia a vehiculos,
 
-		if(localStorage.personajes){
-			const reto3 = JSON.parse(localStorage.getItem("personajes"));
-			modificarPersonajes(reto3);
-			console.log({personajes})
-			console.log("Se esta cargando la informacion desde localStorage")
-		}
-		else{
-			const res3 = await fetch(`${config.HOSTNAME}/people`);
-			const data3 = await res3.json();
-			
-			localStorage.setItem("personajes",JSON.stringify(data3.results))
-			modificarPersonajes(data3.results);
-			console.log({ data3 })
-			console.log("Se esta realizando el fetch a la API")
-		}
+		/*data1.forEach(element => {
+			for (const key in element) {
+				console.log(`${key}: ${element[key]}`)
+			}});*/
 			
 		modificarCargando(false);
 		
@@ -164,22 +151,24 @@ export const Home = () => {
 	<div style={{ backgroundImage: 'url("/cielo-estrellado.webp")' }}>
 		
 			<input className="dropdown-header ms-2 mt-2" placeholder="Buscador" onChange={(e) => displaylist(e.target.value)}></input>
-			
-			<ul className="list-group" >
+			<button className="btn btn-outline-secondary dropdown-toggle float-star ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+				Autocompletado
+			</button>
+			<ul className="dropdown-menu">
 				{store.sugerencias.map((sug) => (
-							<li class="list-group-item w-25 "><a  href="#"><Link to={`/${sug.tipo}/${sug.uid}`}>{sug.name}</Link></a> 
+							<li><a className="dropdown-item" href="#"><Link to={`/${sug.tipo}/${sug.uid}`}>{sug.name}</Link></a> 
 							</li>
 							))}
 			</ul>
-			
+		
 		
 		
 		
 			<button className="btn btn-outline-secondary dropdown-toggle float-end m-5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-				Sable laser(haga click sobre el mango para guardarlo):&nbsp;{colors}
+				Sable laser:&nbsp;{colors}
 			</button>
 				<ul className="dropdown-menu">
-					<li onClick={()=>changeColor("green")}>Verde</li>
+					<li onClick={()=>changeColor("green")}>pepe</li>
 					<li onClick={()=>changeColor("purple")}>Morado</li>
 					<li onClick={()=>changeColor("red")}>Rojo</li>
 					<li onClick={()=>changeColor("blue")}>Azul</li>
@@ -193,8 +182,8 @@ export const Home = () => {
 			</button>
 				<ul className="dropdown-menu">
 				{store.favoritos.map((fav) => (
-							<li><div className="d-flex my-1"><a className="dropdown-item " href="#">{fav.name}</a> <button className="float-end me-1" onClick={()=>actions.eliminarFavoritos(fav.name)}>X</button>
-							</div></li>
+							<li><div><a className="dropdown-item" href="#">{fav.name}</a> 
+							<button className="float-end" onClick={()=>actions.eliminarFavoritos(fav.name)}>X</button></div></li>
 							))}
 				<li><hr className="dropdown-divider"/></li>
 				<li><a className="dropdown-item"  onClick={()=>actions.eliminarTodoFavoritos()}>Eliminar todos</a></li>
@@ -222,7 +211,7 @@ export const Home = () => {
 										<h5 className="card-title">{planeta.name}</h5>
 										<p className="card-text ">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
 										<button className="btn btn-light"><Link to={`/planeta/${planeta.uid}`}>Learn more!</Link></button>
-										<button className="float-end" onClick={() => actions.agregarFavoritos(`${planeta.name}`)} style={{backgroundColor:favcolor(planeta.name)}}>Fav</button>
+										<button className="float-end" onClick={() => actions.agregarFavoritos(`${planeta.name}`)}>Fav</button>
 									</div>
 								</div>
 							</div>
